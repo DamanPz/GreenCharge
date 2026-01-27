@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Station Details | Green Charge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0fdf4;
+            color: #333;
+        }
+
+        header {
+            background: #166534;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #166534;
+            margin-top: 0;
+        }
+
+        .detail-row {
+            margin: 1rem 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #166534;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Green Charge Network</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/stations.html">Stations</a>
+        </nav>
+    </header>
+    <div class="container" id="details-container">
+        <p class="loading">Loading station details...</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('details-container');
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            if (!id) {
+                container.innerHTML = '<p style="color: red">No station ID provided.</p><a href="/stations.html" class="btn-back">← Back to List</a>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/stations/${id}`);
+                if (!response.ok) {
+                    if (response.status === 404) throw new Error('Station not found');
+                    throw new Error('Network error');
+                }
+                const station = await response.json();
+
+                container.innerHTML = `
+                    <h2>${station.name}</h2>
+                    <div class="detail-row"><span class="label">ID:</span> ${station.id}</div>
+                    <div class="detail-row"><span class="label">Location:</span> ${station.location}</div>
+                    <div class="detail-row"><span class="label">Capacity:</span> ${station.capacity}</div>
+                    <div class="detail-row"><span class="label">Status:</span> 
+                        <span style="font-weight: bold; color: ${station.status === 'Available' ? 'green' : (station.status === 'Occupied' ? 'red' : 'orange')}">
+                            ${station.status}
+                        </span>
+                    </div>
+                    <a href="/stations.html" class="btn-back">← Back to List</a>
+                `;
+            } catch (error) {
+                container.innerHTML = `<p style="color: red">Error: ${error.message}</p><a href="/stations.html" class="btn-back">← Back to List</a>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

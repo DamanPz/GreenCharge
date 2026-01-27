@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Charge | Sustainable EV Charging</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0fdf4;
+            color: #333;
+        }
+
+        /* Layout */
+        header {
+            background: #166534;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4rem 1rem;
+            min-height: 500px;
+            background: linear-gradient(to bottom, #f0fdf4, white);
+        }
+
+        .hero-text {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: #166534;
+            margin: 0 0 1rem 0;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: #166534;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #166534;
+            border: 2px solid #166534;
+        }
+
+        .hero-anim {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* How It Works */
+        .section {
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+
+        .section h2 {
+            color: #166534;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-card {
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #166534;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Quick Stats */
+        .stats-section {
+            background: #166534;
+            color: white;
+            padding: 3rem 1rem;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Map Preview */
+        .map-section {
+            max-width: 1000px;
+            margin: 4rem auto;
+            text-align: center;
+        }
+
+        #map-preview {
+            height: 400px;
+            width: 100%;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-large {
+            color: #166534;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .link-large:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background: #064e3b;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column-reverse;
+                text-align: center;
+                padding: 2rem 1rem;
+            }
+
+            .hero-btns {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display:flex; justify-content:space-between; width:100%; padding:0;">
+            <h1>Green Charge</h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/stations.html">Stations</a>
+                <a href="/about.html">About</a>
+                <a href="/admin-login.html">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container" style="display:flex; align-items:center; width:100%; gap:2rem;">
+            <div class="hero-text">
+                <h1>Powering Bengaluru with Clean Energy</h1>
+                <p>Smart solar-powered EV charging stations across the city. Join the sustainable revolution today.</p>
+                <div class="hero-btns">
+                    <a href="/stations.html" class="btn btn-primary">View Charging Stations</a>
+                    <a href="/admin-login.html" class="btn btn-secondary">Admin Login</a>
+                </div>
+            </div>
+            <div class="hero-anim">
+                <dotlottie-player src="https://lottie.host/244b1487-20cd-4e98-92e4-4d164233dd77/iTldOMxmSm.lottie"
+                    background="transparent" speed="1" style="width: 400px; height: 400px;" loop
+                    autoplay></dotlottie-player>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="section">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <span class="step-icon">🗺️</span>
+                    <span class="step-title">1. Find a Station</span>
+                    <p>Locate the nearest solar-powered charging point on our interactive map.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-icon">⚡</span>
+                    <span class="step-title">2. Check Availability</span>
+                    <p>See real-time status: Available, Occupied, or Maintenance.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-icon">🌱</span>
+                    <span class="step-title">3. Charge Sustainably</span>
+                    <p>Power your vehicle with 100% clean, renewable energy.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-val" id="home-total-stations">-</span>
+                    <span class="stat-label">Total Stations</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val" id="home-total-capacity">-</span>
+                    <span class="stat-label">Total Capacity</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val" id="home-available">-</span>
+                    <span class="stat-label">Available Now</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Preview -->
+    <div class="map-section">
+        <div class="container">
+            <h2>Network Coverage</h2>
+            <p>Strategically located hubs in BTM, Indiranagar, Whitefield, and Jayanagar.</p>
+            <div id="map-preview"></div>
+            <a href="/stations.html" class="link-large">View Full Interactive Map →</a>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>GreenCharge Project</strong> &bull; SDG 7: Affordable & Clean Energy</p>
+        <p>A Smart EV Charging Management System aligned with SDG 7: Affordable & Clean Energy</p>
+        <p>Developed by Daman Bhaki Pasi</p>
+        <p>&copy; 2026 GreenCharge</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // --- DYNAMIC STATS LOGIC ---
+        // Fetch live station data to ensure consistency with Admin Dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/api/stations'); // Using same endpoint as Admin
+                if (!res.ok) throw new Error('Failed to load stats');
+                const stations = await res.json();
+
+                // Calculate Totals
+                const totalStations = stations.length;
+
+                // Sum capacity (parse integers, handle "100kW" format if needed, though backend sends "100kW" string usually)
+                // Assuming simple parsing for this mock data phase:
+                const totalCapacity = stations.reduce((sum, s) => {
+                    const cap = parseInt(s.capacity) || 0; // Extracts '50' from '50kW'
+                    return sum + cap;
+                }, 0);
+
+                const availableCount = stations.filter(s => s.status === 'Available').length;
+
+                // Update DOM
+                document.getElementById('home-total-stations').textContent = totalStations;
+                document.getElementById('home-total-capacity').textContent = totalCapacity + ' kW';
+                document.getElementById('home-available').textContent = availableCount;
+
+            } catch (err) {
+                console.error("Error loading homepage stats:", err);
+                // Fallback or leave as '-' on error
+            }
+        });
+
+        // Init Preview Map
+        const map = L.map('map-preview', {
+            zoomControl: false,
+            scrollWheelZoom: false,
+            dragging: false
+        }).setView([12.9716, 77.5946], 11);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        // Add static markers for BTM, Indiranagar, Whitefield, Jayanagar
+        const locations = [
+            [12.9165, 77.6101],
+            [12.9716, 77.6412],
+            [12.9698, 77.7499],
+            [12.9308, 77.5838]
+        ];
+
+        locations.forEach(loc => L.marker(loc).addTo(map));
+    </script>
+</body>
+
+</html>

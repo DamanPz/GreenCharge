@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Green Charge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0fdf4;
+            color: #333;
+        }
+
+        /* Header/Nav */
+        header {
+            background: #166534;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: white;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Content Sections */
+        .section {
+            padding: 4rem 1rem;
+        }
+
+        .section-title {
+            color: #166534;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .section-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .bg-white {
+            background: white;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        ul li::before {
+            content: "•";
+            color: #166534;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Tech Stack Cards */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .tech-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #166534;
+        }
+
+        /* SDG Section */
+        .sdg-box {
+            background: #eadc36;
+            color: #333;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+
+        /* Footer CTA */
+        .cta-section {
+            background: #064e3b;
+            color: white;
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: white;
+            color: #064e3b;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #f0fdf4;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display:flex; justify-content:space-between; width:100%; padding:0;">
+            <h1>Green Charge</h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/stations.html">Stations</a>
+                <a href="/about.html">About</a>
+                <a href="/admin-login.html">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="container"
+            style="display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap; text-align: left;">
+            <div style="flex:1; min-width:300px;">
+                <h1 style="margin-bottom: 1rem;">About Green Charge</h1>
+                <p style="margin:0; font-size:1.25rem; opacity:0.9;">A sustainable, solar-powered EV charging initiative
+                    for Bengaluru.</p>
+            </div>
+            <div style="flex:1; display:flex; justify-content:center; min-width:300px;">
+                <dotlottie-player src="https://lottie.host/244b1487-20cd-4e98-92e4-4d164233dd77/iTldOMxmSm.lottie"
+                    background="transparent" speed="1" style="width: 320px; height: 320px;" loop
+                    autoplay></dotlottie-player>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Overview -->
+    <div class="section bg-white">
+        <div class="container">
+            <h2 class="section-title">What is Green Charge?</h2>
+            <div class="section-content">
+                <p>Green Charge is a smart solar-powered electric vehicle charging station network designed to support
+                    clean energy adoption in Bengaluru. The system provides real-time visibility of charging stations,
+                    availability status, and capacity, promoting sustainable urban mobility.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Problem Statement -->
+    <div class="section">
+        <div class="container">
+            <h2 class="section-title">The Problem We Address</h2>
+            <div class="section-content">
+                <ul>
+                    <li>Rising EV adoption with limited charging infrastructure</li>
+                    <li>Dependency on non-renewable energy sources</li>
+                    <li>Lack of visibility into station availability and usage</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solution -->
+    <div class="section bg-white">
+        <div class="container">
+            <h2 class="section-title">Our Solution</h2>
+            <div class="section-content">
+                <ul>
+                    <li>Solar-powered charging stations</li>
+                    <li>Real-time station tracking</li>
+                    <li>Admin dashboard for station management</li>
+                    <li>Interactive map-based station discovery</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SDG Alignment -->
+    <div class="section">
+        <div class="container">
+            <h2 class="section-title">Aligned with UN Sustainable Development Goals</h2>
+            <div class="sdg-box">
+                SDG 7 – Affordable and Clean Energy
+                <div style="font-weight: normal; margin-top: 0.5rem; font-size: 0.9em;">Promoting renewable energy usage
+                    and sustainable infrastructure.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="section bg-white">
+        <div class="container">
+            <h2 class="section-title">Technology Used</h2>
+            <div class="tech-grid">
+                <div class="tech-card">Frontend<br><span style="font-weight:normal">HTML, CSS, JS</span></div>
+                <div class="tech-card">Backend<br><span style="font-weight:normal">Node.js, Express</span></div>
+                <div class="tech-card">Mapping<br><span style="font-weight:normal">Leaflet + OSM</span></div>
+                <div class="tech-card">Analytics<br><span style="font-weight:normal">Chart.js</span></div>
+                <div class="tech-card">Design<br><span style="font-weight:normal">Green Theme</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer CTA -->
+    <div class="cta-section">
+        <h2>Ready to Charge?</h2>
+        <p>Explore live charging stations across Bengaluru.</p>
+        <a href="/stations.html" class="btn">View Charging Stations</a>
+    </div>
+
+
+
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+</body>
+
+</html>
