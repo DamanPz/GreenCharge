@@ -19,10 +19,5 @@ Currently, the project runs as a **local prototype** with the following features
 - **Mapping**: Leaflet + OpenStreetMap
 - **Visualizations**: Chart.js, DotLottie
 
-## Roadmap
-- **Phase 1 (Current)**: Frontend UI, Admin Panel, Static/In-Memory Data.
-- **Phase 2 (Planned)**: Database integration (MongoDB/SQL) for persistent storage.
-- **Phase 3**: User authentication and payment gateway integration.
-
 ## Author
 **Daman Bhaki Pasi**
