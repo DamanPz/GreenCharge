@@ -221,10 +221,6 @@
                 <span class="stat-label">🔌 Total Stations</span>
             </div>
             <div class="stat-card">
-                <span class="stat-value" id="stat-capacity">0 kW</span>
-                <span class="stat-label">⚡ Total Capacity</span>
-            </div>
-            <div class="stat-card">
                 <span class="stat-value" id="stat-available">0</span>
                 <span class="stat-label">🟢 Available Stations</span>
             </div>
@@ -298,11 +294,9 @@
 
         function updateStats(stations) {
             const total = stations.length;
-            const capacity = stations.reduce((sum, s) => sum + parseInt(s.capacity), 0);
             const available = stations.filter(s => s.status === 'Available').length;
 
             document.getElementById('stat-total').textContent = total;
-            document.getElementById('stat-capacity').textContent = `${capacity} kW`;
             document.getElementById('stat-available').textContent = available;
         }
 
@@ -333,18 +327,29 @@
             }
 
             // Render List
-            list.innerHTML = stations.map(station => `
+            list.innerHTML = stations.map(station => {
+                let actionBtn = '';
+                if (station.status === 'Available') {
+                    actionBtn = `<button class="btn" style="margin-left:5px;" onclick="event.stopPropagation(); bookStation(${station.id})">Start Charging</button>`;
+                } else if (station.status === 'Occupied') {
+                    actionBtn = `<button class="btn" style="margin-left:5px; background-color:#991b1b;" onclick="event.stopPropagation(); releaseStation(${station.id})">Finish Charging</button>`;
+                } else if (station.status === 'Maintenance') {
+                    actionBtn = `<button class="btn" style="margin-left:5px; background-color:#854d0e; cursor:not-allowed;" disabled onclick="event.stopPropagation()">Under Maintenance</button>`;
+                }
+
+                return `
                 <div class="station-card" onclick="focusStation(${station.id})">
                     <div class="station-info">
                         <h3>${station.name}</h3>
                         <p>📍 ${station.location}</p>
-                        <p>⚡ Capacity: ${station.capacity}</p>
                         <span class="station-status status-${station.status}">${station.status}</span>
                         <br>
                         <a href="station.html?id=${station.id}" class="btn" onclick="event.stopPropagation()">View Details</a>
+                        ${actionBtn}
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
 
             // Render Markers
             const bounds = L.latLngBounds();
@@ -354,7 +359,6 @@
                     marker.bindPopup(`
                         <b>${station.name}</b><br>
                         ${station.location}<br>
-                        Capacity: ${station.capacity}<br>
                         Status: ${station.status}
                     `);
                     markers[station.id] = marker;
@@ -365,6 +369,48 @@
             // Fit map to bounds if we found any valid markers
             if (stations.length > 0 && bounds.isValid()) {
                 map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+            }
+        }
+
+        async function fetchStations() {
+            try {
+                const response = await fetch('/api/stations');
+                if (!response.ok) throw new Error('Network response was not ok');
+                allStations = await response.json();
+                updateStats(allStations);
+                filterStations(); // Re-apply existing filters and re-render
+            } catch (error) {
+                console.error("Error refreshing stations:", error);
+            }
+        }
+
+        async function bookStation(id) {
+            try {
+                const response = await fetch(`/api/stations/${id}/book`, { method: 'POST' });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    await fetchStations();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('An error occurred while booking the station.');
+            }
+        }
+
+        async function releaseStation(id) {
+            try {
+                const response = await fetch(`/api/stations/${id}/release`, { method: 'POST' });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    await fetchStations();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('An error occurred while releasing the station.');
             }
         }
 

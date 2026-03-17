@@ -95,7 +95,7 @@
         /* Key Metrics Row */
         .metrics-row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -344,6 +344,7 @@
         <nav>
             <a href="/" class="nav-link" target="_blank">Home</a>
             <a href="/stations.html" class="nav-link" target="_blank">Stations</a>
+            <a href="/charging-history.html" class="nav-link">History</a>
             <a href="/about.html" class="nav-link" target="_blank">About</a>
             <a href="#" onclick="logout()" class="nav-link">Logout</a>
         </nav>
@@ -355,10 +356,6 @@
             <div class="metric-card">
                 <span class="metric-value" id="total-stations">0</span>
                 <span class="metric-label">Total Stations</span>
-            </div>
-            <div class="metric-card">
-                <span class="metric-value" id="total-capacity">0 kW</span>
-                <span class="metric-label">System Capacity</span>
             </div>
             <div class="metric-card">
                 <span class="metric-value" id="available-count">0</span>
@@ -380,7 +377,6 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Location</th>
-                                <th>Cap</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -442,10 +438,6 @@
                     <input type="text" id="location" required>
                 </div>
                 <div class="form-group">
-                    <label>Capacity</label>
-                    <input type="text" id="capacity" placeholder="e.g. 50kW" required>
-                </div>
-                <div class="form-group">
                     <label>Status</label>
                     <select id="status">
                         <option value="Available">Available</option>
@@ -495,8 +487,6 @@
 
         function updateStats(stations) {
             document.getElementById('total-stations').textContent = stations.length;
-            const capacity = stations.reduce((sum, s) => sum + parseInt(s.capacity || 0), 0);
-            document.getElementById('total-capacity').textContent = capacity + ' kW';
             const available = stations.filter(s => s.status === 'Available').length;
             document.getElementById('available-count').textContent = available;
         }
@@ -507,7 +497,6 @@
                 <tr>
                     <td><strong>${s.name}</strong></td>
                     <td>${s.location}</td>
-                    <td>${s.capacity}</td>
                     <td><span class="status-badge ${getStatusClass(s.status)}">${s.status}</span></td>
                     <td>
                         <button class="btn btn-sm btn-edit" onclick='editStation(${JSON.stringify(s)})'>Edit</button>
@@ -523,23 +512,14 @@
             return 'status-maintenance';
         }
 
-        function renderAnalytics(stations) {
+        async function renderAnalytics(stations) {
             const statusCounts = { Available: 0, Occupied: 0, Maintenance: 0 };
             stations.forEach(s => {
                 if (statusCounts[s.status] !== undefined) statusCounts[s.status]++;
             });
 
-            // Mock Data
-            const mockUsageLabels = ['BTM', 'Indira', 'Whitefield', 'Jayanagar'];
-            const mockUsageData = [32, 45, 28, 19];
-            const mockDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            const mockEnergyData = [120, 150, 180, 140, 200, 220, 190];
-
-            if (charts.usage) charts.usage.destroy();
-            if (charts.energy) charts.energy.destroy();
+            // Status Chart (Right Column) is still based on the live stations prop passed in
             if (charts.status) charts.status.destroy();
-
-            // Status Chart (Right Column)
             charts.status = new Chart(document.getElementById('statusChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
@@ -553,37 +533,62 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
 
-            // Usage Chart
-            charts.usage = new Chart(document.getElementById('usageChart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: mockUsageLabels,
-                    datasets: [{
-                        label: 'Sessions',
-                        data: mockUsageData,
-                        backgroundColor: '#166534',
-                        borderRadius: 4
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-            });
+            try {
+                // Fetch dynamic analytics from new API routes
+                const sessionsRes = await fetch('/api/analytics/station-sessions');
+                const energyRes = await fetch('/api/analytics/weekly-energy');
+                
+                if (!sessionsRes.ok || !energyRes.ok) throw new Error('Analytics fetch failed');
+                
+                const sessionsData = await sessionsRes.json();
+                const energyData = await energyRes.json();
 
-            // Energy Chart
-            charts.energy = new Chart(document.getElementById('energyChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: mockDays,
-                    datasets: [{
-                        label: 'kWh Delivered',
-                        data: mockEnergyData,
-                        borderColor: '#15803d',
-                        backgroundColor: 'rgba(21, 128, 61, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-            });
+                // Build Usage Arrays
+                const usageLabels = sessionsData.map(d => d.station);
+                const usageCounts = sessionsData.map(d => d.sessions);
+
+                // Build Energy Arrays
+                const energyLabels = energyData.map(d => d.day);
+                const energyAmounts = energyData.map(d => d.energy);
+
+                if (charts.usage) charts.usage.destroy();
+                if (charts.energy) charts.energy.destroy();
+
+                // Usage Chart
+                charts.usage = new Chart(document.getElementById('usageChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: usageLabels,
+                        datasets: [{
+                            label: 'Sessions',
+                            data: usageCounts,
+                            backgroundColor: '#166534',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                });
+
+                // Energy Chart
+                charts.energy = new Chart(document.getElementById('energyChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: energyLabels,
+                        datasets: [{
+                            label: 'kWh Delivered',
+                            data: energyAmounts,
+                            borderColor: '#15803d',
+                            backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                });
+
+            } catch (err) {
+                console.error("Failed to load analytics data:", err);
+            }
         }
 
         // Modal Logic
@@ -601,7 +606,6 @@
             document.getElementById('station-id').value = station.id;
             document.getElementById('name').value = station.name;
             document.getElementById('location').value = station.location;
-            document.getElementById('capacity').value = station.capacity;
             document.getElementById('status').value = station.status;
             document.getElementById('lat').value = station.lat || '';
             document.getElementById('lng').value = station.lng || '';
@@ -615,7 +619,6 @@
             const data = {
                 name: document.getElementById('name').value,
                 location: document.getElementById('location').value,
-                capacity: document.getElementById('capacity').value,
                 status: document.getElementById('status').value,
                 lat: parseFloat(document.getElementById('lat').value),
                 lng: parseFloat(document.getElementById('lng').value)
